@@ -1,4 +1,4 @@
-﻿namespace Notes;
+﻿namespace Notes.Views;
 
 public partial class NotePage : ContentPage
 {
@@ -7,8 +7,24 @@ public partial class NotePage : ContentPage
 	{
 		InitializeComponent();
 
-		if (File.Exists(_fileName))
-			TextEditor.Text = File.ReadAllText(_fileName);
+		string appDataPath = FileSystem.AppDataDirectory;
+		string randomFileName = $"{Path.GetRandomFileName()}.notes.txt";
+
+		LoadNote(Path.Combine(appDataPath, randomFileName));
+	}
+
+	private void LoadNote(string fileName)
+	{
+		Models.Notes noteModel = new Models.Notes();
+		noteModel.FileName = fileName;
+
+		if(File.Exists(fileName))
+		{
+			noteModel.Date = File.GetCreationTime(fileName);
+			noteModel.Text = File.ReadAllText(fileName);
+		}
+
+		BindingContext = noteModel;
 	}
 
     void SaveButton_Clicked(System.Object sender, System.EventArgs e)
